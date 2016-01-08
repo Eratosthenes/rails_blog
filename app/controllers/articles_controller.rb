@@ -1,15 +1,30 @@
 class ArticlesController < ApplicationController
+  def destroy
+    @article = Article.find(params[:id])
+    @article.destroy
+    redirect_to articles_path
+  end
+
   def new
+    @article = Article.new
   end
 
   def create
     #render plain: params[:article].inspect
-    @article = Article.new(params.require(:article).permit(:title, :text))
+    @article = Article.new(article_params)
     if @article.save
       redirect_to @article
     else
-      flash[:error] = "Title must be at least 5 characters"
       render 'new' 
+    end
+  end
+
+  def update
+    @article = Article.find(params[:id])
+    if @article.update(article_params)
+      redirect_to @article
+    else
+      render 'edit'
     end
   end
 
@@ -17,7 +32,16 @@ class ArticlesController < ApplicationController
     @article = Article.find(params[:id])
   end
 
+  def edit
+    @article = Article.find(params[:id])
+  end
+
   def index
     @articles = Article.all
+  end
+
+  private
+  def article_params
+    params.require(:article).permit(:title, :text)
   end
 end
